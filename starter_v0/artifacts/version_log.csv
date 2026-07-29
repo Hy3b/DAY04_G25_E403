@@ -1,1 +1,5 @@
-version,author,changed_artifact,artifact_version,prompt_hash,tools_hash,reason,hypothesis,metric_name,metric_before,metric_after,run_file
+version,artifact_version,hypothesis,passed_cases,case_accuracy,tool_routing_accuracy,argument_accuracy,notes
+base,base_version,Baseline default prompt with bad proactive rules,14,0.70,0.75,0.70,Failed R08 R10 R11 R12 R13 R14
+v1,v1+p76acb29285ba+t6cdb53d5d7b8,Remove out-of-scope tool forcing and allow multi-tool parallel execution,17,0.85,1.0,0.85,Fixed R08 R13 R14
+v2,v2+paefac6ff1a60+t6cdb53d5d7b8,Add rules to prevent hallucinating missing URLs and handles,16,0.80,0.90,0.80,Still failing missing_info due to not calling clarify tool
+v3,v3+pd10d3cc7f297+t5088b296bf19,Enforce calling clarify tool for missing info and add send confirmation boundary,20,1.00,1.00,1.00,All 20 cases passed

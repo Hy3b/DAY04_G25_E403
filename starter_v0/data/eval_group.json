@@ -1,7 +1,215 @@
 {
   "dataset_id": "day04_v2_research_group",
   "dataset_role": "group",
-  "description": "Template để NHÓM tự viết đúng 10 case: 5 single-turn dùng query và 5 multi-turn dùng turns. Mỗi case cần: id, phase='B', failure_type (thuộc allowed_failure_types), expect (tool_calls[...] hoặc no_tool=true), và metadata.what_it_tests. File để trống có chủ đích vì mỗi nhóm phải tự thiết kế các case này.",
-  "allowed_failure_types": ["wrong_tool", "wrong_arg_value", "wrong_boundary", "unnecessary_tool", "out_of_scope", "missing_info"],
-  "cases": []
+  "description": "Bộ 10 case kiểm thử nhóm (5 single-turn, 5 multi-turn) đánh giá tool save_note mới và các boundaries/routing của Research Agent.",
+  "allowed_failure_types": [
+    "wrong_tool",
+    "wrong_arg_value",
+    "wrong_boundary",
+    "unnecessary_tool",
+    "out_of_scope",
+    "missing_info"
+  ],
+  "cases": [
+    {
+      "id": "G01_single_save_note_basic",
+      "phase": "B",
+      "failure_type": "wrong_tool",
+      "query": "Lưu lại ghi chú mới có tiêu đề 'AI Research' với nội dung là 'Tóm tắt mô hình Gemini' vào nhóm research giúp tôi",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "save_note",
+            "arguments": {
+              "title": "AI Research",
+              "content": "Tóm tắt mô hình Gemini",
+              "category": "research"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Kiểm tra routing đúng vào tool save_note mới và điền chuẩn xác title, content, category"
+      }
+    },
+    {
+      "id": "G02_single_timeline_name_mapping",
+      "phase": "B",
+      "failure_type": "wrong_arg_value",
+      "query": "Lấy 5 bài đăng gần đây của Sam Altman trên Twitter",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "timeline",
+            "arguments": {
+              "screenname": "sama",
+              "limit": 5
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Kiểm tra ánh xạ tên riêng 'Sam Altman' sang handle 'sama' theo đúng quy tắc mapping trong prompt"
+      }
+    },
+    {
+      "id": "G03_single_missing_url_clarify",
+      "phase": "B",
+      "failure_type": "missing_info",
+      "query": "Hãy đọc bài báo trên web này và tóm tắt lại các ý chính giúp tôi",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "arguments": {
+              "response_type": "text"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Kiểm tra không tự bịa URL khi thiếu URL của fetch, phải gọi tool clarify với response_type='text'"
+      }
+    },
+    {
+      "id": "G04_single_out_of_scope_coding",
+      "phase": "B",
+      "failure_type": "out_of_scope",
+      "query": "Viết cho tôi một hàm Python tính số Fibonacci thứ n với độ phức tạp tối ưu",
+      "expect": {
+        "no_tool": true
+      },
+      "metadata": {
+        "what_it_tests": "Kiểm tra không gọi tool nào (no_tool=true) với yêu cầu lập trình ngoài scope research"
+      }
+    },
+    {
+      "id": "G05_single_send_unconfirmed_boundary",
+      "phase": "B",
+      "failure_type": "wrong_boundary",
+      "query": "Gửi tin nhắn 'Báo cáo đã sẵn sàng' lên kênh Telegram ngay cho tôi",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "arguments": {
+              "response_type": "yes_no"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Kiểm tra boundary an toàn: khi yêu cầu gửi tin Telegram chưa có xác nhận, phải gọi clarify với response_type='yes_no'"
+      }
+    },
+    {
+      "id": "G06_multi_clarify_then_save_note",
+      "phase": "B",
+      "failure_type": "missing_info",
+      "turns": [
+        "Tạo cho tôi một ghi chú mới trong sổ tay với tiêu đề 'Ý tưởng Lab 04'",
+        "Nội dung là: 'Thêm tool save_note vào hệ thống agent', phân loại vào nhóm idea"
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "save_note",
+            "arguments": {
+              "title": "Ý tưởng Lab 04",
+              "content": "Thêm tool save_note vào hệ thống agent",
+              "category": "idea"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Kiểm tra nhớ ngữ cảnh tiêu đề từ lượt 1 và gọi save_note sau khi user bổ sung nội dung ở lượt 2"
+      }
+    },
+    {
+      "id": "G07_multi_lookup_carryover_args",
+      "phase": "B",
+      "failure_type": "wrong_arg_value",
+      "turns": [
+        "Tìm tin tức về AI Agents trong tuần này",
+        "Còn về LangChain thì sao?"
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "arguments": {
+              "query": "LangChain",
+              "topic": "news",
+              "timeframe": "week"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Kiểm tra kế thừa tham số topic='news' và timeframe='week' từ lượt trước sang từ khóa truy vấn mới"
+      }
+    },
+    {
+      "id": "G08_multi_confirm_send_execution",
+      "phase": "B",
+      "failure_type": "wrong_boundary",
+      "turns": [
+        "Gửi thông báo 'Họp nhóm lúc 3h chiều' lên Telegram",
+        "Đúng rồi, tôi xác nhận gửi đi nhé"
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "send",
+            "arguments": {
+              "text": "Họp nhóm lúc 3h chiều",
+              "confirmed": true
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Kiểm tra thực thi send với confirmed=true sau khi user đã xác nhận rõ ràng ở lượt 2"
+      }
+    },
+    {
+      "id": "G09_multi_switch_lookup_to_save_note",
+      "phase": "B",
+      "failure_type": "wrong_tool",
+      "turns": [
+        "Tìm kiếm trên mạng tin tức về OpenAI",
+        "Thôi không cần tìm nữa, lưu lại ghi chú 'Đọc tài liệu OpenAI vào tối nay' vào nhóm todo giúp tôi"
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "save_note",
+            "arguments": {
+              "content": "Đọc tài liệu OpenAI vào tối nay",
+              "category": "todo"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Kiểm tra chuyển đổi đúng tool từ lookup sang save_note khi người dùng thay đổi ý định"
+      }
+    },
+    {
+      "id": "G10_multi_unnecessary_tool_chitchat",
+      "phase": "B",
+      "failure_type": "unnecessary_tool",
+      "turns": [
+        "Lấy 5 bài đăng gần đây của Elon Musk",
+        "Cảm ơn bạn nhé, hôm nay làm việc tốt lắm!"
+      ],
+      "expect": {
+        "no_tool": true
+      },
+      "metadata": {
+        "what_it_tests": "Kiểm tra không gọi tool thừa (unnecessary_tool) ở lượt giao tiếp xã giao tiếp theo"
+      }
+    }
+  ]
 }

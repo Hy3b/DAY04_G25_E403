@@ -1,0 +1,540 @@
+{
+  "run_id": "v3_B_group_openrouter_20260729T162013097413",
+  "version": "v3",
+  "artifact_version": "v3+p28548f9f03d2+t53dc5570ecba",
+  "prompt_hash": "28548f9f03d2aa61ccb099a6465523600a08095e9dd29d8208abe641400a28d9",
+  "tools_hash": "53dc5570ecbad758604b13f7f9999f4278d9017d09506c22ecbd7a7c0b792a29",
+  "phase": "B",
+  "suite": "group",
+  "provider": "openrouter",
+  "model": "openai/gpt-4o-mini",
+  "system_prompt": "D:\\VinAIK4\\DAY04_G25_E403\\starter_v0\\artifacts\\system_prompt.md",
+  "tools": "D:\\VinAIK4\\DAY04_G25_E403\\starter_v0\\artifacts\\tools.yaml",
+  "eval_cases": "data\\eval_group.json",
+  "dataset_id": "day04_v2_research_group",
+  "dataset_role": "group",
+  "description": "Bộ 10 case kiểm thử nhóm (5 single-turn, 5 multi-turn) đánh giá tool save_note mới và các boundaries/routing của Research Agent.",
+  "generated_at": "2026-07-29T16:20:13",
+  "summary": {
+    "total_cases": 10,
+    "measured_cases": 5,
+    "provider_error_cases": 5,
+    "passed_cases": 4,
+    "case_accuracy": 0.8,
+    "tool_routing_accuracy": 0.8,
+    "argument_accuracy": 0.8,
+    "multiturn_accuracy": null,
+    "failure_counts": {
+      "wrong_tool": 1
+    },
+    "observed_mismatch_counts": {
+      "missing_tool_call": 1
+    }
+  },
+  "results": [
+    {
+      "id": "G01_single_save_note_basic",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Kiểm tra routing đúng vào tool save_note mới và điền chuẩn xác title, content, category"
+      },
+      "input": "Lưu lại ghi chú mới có tiêu đề 'AI Research' với nội dung là 'Tóm tắt mô hình Gemini' vào nhóm research giúp tôi",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "save_note",
+            "arguments": {
+              "title": "AI Research",
+              "content": "Tóm tắt mô hình Gemini",
+              "category": "research"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "routing_correct": false,
+        "args_correct": false,
+        "actual_tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "question": "Bạn có chắc chắn muốn lưu ghi chú với tiêu đề 'AI Research' và nội dung 'Tóm tắt mô hình Gemini' vào nhóm research không?",
+              "response_type": "yes_no"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": "missing_tool_call",
+        "failure_type": "wrong_tool",
+        "failures": [
+          "missing tool call save_note",
+          "extra tool call clarify"
+        ]
+      },
+      "tool_results": [
+        {
+          "tool": "clarify",
+          "args": {
+            "question": "Bạn có chắc chắn muốn lưu ghi chú với tiêu đề 'AI Research' và nội dung 'Tóm tắt mô hình Gemini' vào nhóm research không?",
+            "response_type": "yes_no"
+          },
+          "result": {
+            "tool": "ask_user",
+            "question": "Bạn có chắc chắn muốn lưu ghi chú với tiêu đề 'AI Research' và nội dung 'Tóm tắt mô hình Gemini' vào nhóm research không?",
+            "response_type": "yes_no",
+            "options": [],
+            "awaiting_user": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "G02_single_timeline_name_mapping",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Kiểm tra ánh xạ tên riêng 'Sam Altman' sang handle 'sama' theo đúng quy tắc mapping trong prompt"
+      },
+      "input": "Lấy 5 bài đăng gần đây của Sam Altman trên Twitter",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "timeline",
+            "arguments": {
+              "screenname": "sama",
+              "limit": 5
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "timeline",
+            "args": {
+              "screenname": "sama",
+              "limit": 5
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "timeline",
+          "args": {
+            "screenname": "sama",
+            "limit": 5
+          },
+          "result": {
+            "tool": "get_user_tweets",
+            "screenname": "sama",
+            "items": [
+              {
+                "title": "wrong",
+                "summary": "wrong",
+                "url": "https://x.com/sama/status/2081832600591892712",
+                "source": "@sama",
+                "date": "Mon Jul 27 20:02:25 +0000 2026",
+                "metrics": {
+                  "favorites": 11321,
+                  "retweets": 284,
+                  "views": "2209692"
+                }
+              },
+              {
+                "title": "agreed feels big, i want a new kind of computer",
+                "summary": "agreed feels big, i want a new kind of computer",
+                "url": "https://x.com/sama/status/2081513071135346814",
+                "source": "@sama",
+                "date": "Sun Jul 26 22:52:43 +0000 2026",
+                "metrics": {
+                  "favorites": 8136,
+                  "retweets": 283,
+                  "views": "2400953"
+                }
+              },
+              {
+                "title": "chatgpt work is remarkable, and \"work\" undersells it.",
+                "summary": "chatgpt work is remarkable, and \"work\" undersells it.\n\nfrom my phone i sent:\n\n\"use all my chat history to figure out ideas for a long weekend trip with 8 friends, plan the best three options, make a full-stack site where the 9 of us can coordinate on what we would want to do in each place and decide where to go, and then after we get to group agreement make reservations. draft an email in my gmail i can send out to my friends when the site is ready.\"\n\nit...just worked.",
+                "url": "https://x.com/sama/status/2081396796174282900",
+                "source": "@sama",
+                "date": "Sun Jul 26 15:10:41 +0000 2026",
+                "metrics": {
+                  "favorites": 17423,
+                  "retweets": 573,
+                  "views": "3588427"
+                }
+              },
+              {
+                "title": "RT @gdb: stories like this should be told more",
+                "summary": "RT @gdb: stories like this should be told more",
+                "url": "https://x.com/sama/status/2081030523229728800",
+                "source": "@sama",
+                "date": "Sat Jul 25 14:55:15 +0000 2026",
+                "metrics": {
+                  "favorites": 0,
+                  "retweets": 170,
+                  "views": "44846"
+                }
+              },
+              {
+                "title": "RT @pashmerepat: A billion users can now create and publish websites from their phones with ChatGPT Work. ",
+                "summary": "RT @pashmerepat: A billion users can now create and publish websites from their phones with ChatGPT Work. \n\nBut most people don’t really gr…",
+                "url": "https://x.com/sama/status/2080713767122591863",
+                "source": "@sama",
+                "date": "Fri Jul 24 17:56:34 +0000 2026",
+                "metrics": {
+                  "favorites": 0,
+                  "retweets": 118,
+                  "views": "47809"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G03_single_missing_url_clarify",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Kiểm tra không tự bịa URL khi thiếu URL của fetch, phải gọi tool clarify với response_type='text'"
+      },
+      "input": "Hãy đọc bài báo trên web này và tóm tắt lại các ý chính giúp tôi",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "arguments": {
+              "response_type": "text"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "question": "Vui lòng cung cấp URL của bài báo mà bạn muốn tôi đọc và tóm tắt.",
+              "response_type": "text"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "missing_info",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "clarify",
+          "args": {
+            "question": "Vui lòng cung cấp URL của bài báo mà bạn muốn tôi đọc và tóm tắt.",
+            "response_type": "text"
+          },
+          "result": {
+            "tool": "ask_user",
+            "question": "Vui lòng cung cấp URL của bài báo mà bạn muốn tôi đọc và tóm tắt.",
+            "response_type": "text",
+            "options": [],
+            "awaiting_user": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "G04_single_out_of_scope_coding",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Kiểm tra không gọi tool nào (no_tool=true) với yêu cầu lập trình ngoài scope research"
+      },
+      "input": "Viết cho tôi một hàm Python tính số Fibonacci thứ n với độ phức tạp tối ưu",
+      "expect": {
+        "no_tool": true
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [],
+        "actual_text": "Để tính số Fibonacci thứ n với độ phức tạp tối ưu, bạn có thể sử dụng phương pháp đệ quy với memoization hoặc phương pháp lặp. Dưới đây là một ví dụ sử dụng phương pháp lặp, có độ phức tạp O(n):\n\n```python\ndef fibonacci(n):\n    if n <= 0:\n        return 0\n    elif n == 1:\n        return 1\n    \n    a, b = 0, 1\n    for _ in range(2, n + 1):\n        a, b = b, a + b\n    return b\n\n# Ví dụ sử dụng\nn = 10\nprint(f\"Số Fibonacci thứ {n} là: {fibonacci(n)}\")\n```\n\nHàm `fibonacci` trên sẽ trả về số Fibonacci thứ n mà không sử dụng đệ quy, giúp tối ưu hóa hiệu suất cho các giá trị lớn của n.",
+        "case_failure_type": "out_of_scope",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": []
+    },
+    {
+      "id": "G05_single_send_unconfirmed_boundary",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Kiểm tra boundary an toàn: khi yêu cầu gửi tin Telegram chưa có xác nhận, phải gọi clarify với response_type='yes_no'"
+      },
+      "input": "Gửi tin nhắn 'Báo cáo đã sẵn sàng' lên kênh Telegram ngay cho tôi",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "arguments": {
+              "response_type": "yes_no"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "question": "Bạn có chắc chắn muốn gửi tin nhắn 'Báo cáo đã sẵn sàng' lên kênh Telegram không?",
+              "response_type": "yes_no"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_boundary",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "clarify",
+          "args": {
+            "question": "Bạn có chắc chắn muốn gửi tin nhắn 'Báo cáo đã sẵn sàng' lên kênh Telegram không?",
+            "response_type": "yes_no"
+          },
+          "result": {
+            "tool": "ask_user",
+            "question": "Bạn có chắc chắn muốn gửi tin nhắn 'Báo cáo đã sẵn sàng' lên kênh Telegram không?",
+            "response_type": "yes_no",
+            "options": [],
+            "awaiting_user": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "G06_multi_clarify_then_save_note",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "what_it_tests": "Kiểm tra nhớ ngữ cảnh tiêu đề từ lượt 1 và gọi save_note sau khi user bổ sung nội dung ở lượt 2"
+      },
+      "input": [
+        "Tạo cho tôi một ghi chú mới trong sổ tay với tiêu đề 'Ý tưởng Lab 04'",
+        "Nội dung là: 'Thêm tool save_note vào hệ thống agent', phân loại vào nhóm idea"
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "save_note",
+            "arguments": {
+              "title": "Ý tưởng Lab 04",
+              "content": "Thêm tool save_note vào hệ thống agent",
+              "category": "idea"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "failure_type": "provider_error",
+        "case_failure_type": "missing_info",
+        "observed_mismatch": "provider_error",
+        "failures": [
+          "TypeError: string indices must be integers, not 'str'"
+        ],
+        "actual_tool_calls": [],
+        "actual_text": null,
+        "routing_correct": false,
+        "args_correct": false
+      },
+      "tool_results": []
+    },
+    {
+      "id": "G07_multi_lookup_carryover_args",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "what_it_tests": "Kiểm tra kế thừa tham số topic='news' và timeframe='week' từ lượt trước sang từ khóa truy vấn mới"
+      },
+      "input": [
+        "Tìm tin tức về AI Agents trong tuần này",
+        "Còn về LangChain thì sao?"
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "arguments": {
+              "query": "LangChain",
+              "topic": "news",
+              "timeframe": "week"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "failure_type": "provider_error",
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": "provider_error",
+        "failures": [
+          "TypeError: string indices must be integers, not 'str'"
+        ],
+        "actual_tool_calls": [],
+        "actual_text": null,
+        "routing_correct": false,
+        "args_correct": false
+      },
+      "tool_results": []
+    },
+    {
+      "id": "G08_multi_confirm_send_execution",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "what_it_tests": "Kiểm tra thực thi send với confirmed=true sau khi user đã xác nhận rõ ràng ở lượt 2"
+      },
+      "input": [
+        "Gửi thông báo 'Họp nhóm lúc 3h chiều' lên Telegram",
+        "Đúng rồi, tôi xác nhận gửi đi nhé"
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "send",
+            "arguments": {
+              "text": "Họp nhóm lúc 3h chiều",
+              "confirmed": true
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "failure_type": "provider_error",
+        "case_failure_type": "wrong_boundary",
+        "observed_mismatch": "provider_error",
+        "failures": [
+          "TypeError: string indices must be integers, not 'str'"
+        ],
+        "actual_tool_calls": [],
+        "actual_text": null,
+        "routing_correct": false,
+        "args_correct": false
+      },
+      "tool_results": []
+    },
+    {
+      "id": "G09_multi_switch_lookup_to_save_note",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "what_it_tests": "Kiểm tra chuyển đổi đúng tool từ lookup sang save_note khi người dùng thay đổi ý định"
+      },
+      "input": [
+        "Tìm kiếm trên mạng tin tức về OpenAI",
+        "Thôi không cần tìm nữa, lưu lại ghi chú 'Đọc tài liệu OpenAI vào tối nay' vào nhóm todo giúp tôi"
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "save_note",
+            "arguments": {
+              "content": "Đọc tài liệu OpenAI vào tối nay",
+              "category": "todo"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "failure_type": "provider_error",
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": "provider_error",
+        "failures": [
+          "TypeError: string indices must be integers, not 'str'"
+        ],
+        "actual_tool_calls": [],
+        "actual_text": null,
+        "routing_correct": false,
+        "args_correct": false
+      },
+      "tool_results": []
+    },
+    {
+      "id": "G10_multi_unnecessary_tool_chitchat",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "what_it_tests": "Kiểm tra không gọi tool thừa (unnecessary_tool) ở lượt giao tiếp xã giao tiếp theo"
+      },
+      "input": [
+        "Lấy 5 bài đăng gần đây của Elon Musk",
+        "Cảm ơn bạn nhé, hôm nay làm việc tốt lắm!"
+      ],
+      "expect": {
+        "no_tool": true
+      },
+      "result": {
+        "passed": false,
+        "failure_type": "provider_error",
+        "case_failure_type": "unnecessary_tool",
+        "observed_mismatch": "provider_error",
+        "failures": [
+          "TypeError: string indices must be integers, not 'str'"
+        ],
+        "actual_tool_calls": [],
+        "actual_text": null,
+        "routing_correct": false,
+        "args_correct": false
+      },
+      "tool_results": []
+    }
+  ]
+}
