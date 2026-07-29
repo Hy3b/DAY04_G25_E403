@@ -1,1 +1,5 @@
 version,author,changed_artifact,artifact_version,prompt_hash,tools_hash,reason,hypothesis,metric_name,metric_before,metric_after,run_file
+v0,G25,none,v0+pf0c107a9d7a1+t011c271ef0bb,f0c107a9d7a1,011c271ef0bb,Chay baseline de lay diem v0,Baseline chay binh thuong,case_accuracy,,0.7,runs/v0_B_base_openrouter_20260729T145235030458.json
+v1,G25,system_prompt.md,v0+p5e6be4d56c5b+t011c271ef0bb,5e6be4d56c5b,011c271ef0bb,Thu them luat booking de sua loi missing_info,Them luat bat hoi lai neu booking se giup giam missing_info,case_accuracy,0.7,0.65,runs/v0_B_base_openrouter_20260729T151202905266.json
+v2,G25,system_prompt.md,v0+pf702805c5e03+t011c271ef0bb,f702805c5e03,011c271ef0bb,Model van doan bua tham so,Xoa han doan xui giuc doan bua se giam loi missing_info va tang diem,case_accuracy,0.65,0.85,runs/v0_B_base_openrouter_20260729T151646642852.json
+v3,G25,tools.yaml,v2+pf702805c5e03+te1f6f023614e,f702805c5e03,e1f6f023614e,Model nham lan giua cac tool tim kiem va thieu xac nhan,Cung cap mo ta chi tiet cho tools.yaml de giup LLM phan biet ro hon,case_accuracy,0.85,0.95,runs/v2_B_base_openrouter_20260729T154749272881.json

@@ -3,5 +3,116 @@
   "dataset_role": "group",
   "description": "Template để NHÓM tự viết đúng 10 case: 5 single-turn dùng query và 5 multi-turn dùng turns. Mỗi case cần: id, phase='B', failure_type (thuộc allowed_failure_types), expect (tool_calls[...] hoặc no_tool=true), và metadata.what_it_tests. File để trống có chủ đích vì mỗi nhóm phải tự thiết kế các case này.",
   "allowed_failure_types": ["wrong_tool", "wrong_arg_value", "wrong_boundary", "unnecessary_tool", "out_of_scope", "missing_info"],
-  "cases": []
+  "cases": [
+    {
+      "id": "G01_single_wrong_tool",
+      "phase": "B",
+      "suite": "group",
+      "query": "Cộng đồng Twitter đang nói gì về xe điện VinFast?",
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [{"name": "social_search", "args": {"query": "VinFast"}}]},
+      "metadata": {"skill": "social_search_routing", "difficulty": "easy", "what_it_tests": "Tìm kiếm chủ đề trên Twitter -> dùng social_search, không dùng lookup (web search)."}
+    },
+    {
+      "id": "G02_single_out_of_scope",
+      "phase": "B",
+      "suite": "group",
+      "query": "Chỉ tôi cách cài đặt Python trên Windows.",
+      "failure_type": "out_of_scope",
+      "expect": {"no_tool": true, "behavior": "refuse"},
+      "metadata": {"skill": "out_of_scope_coding", "difficulty": "easy", "what_it_tests": "Hỏi hướng dẫn cài đặt kỹ thuật nằm ngoài scope research -> từ chối, không dùng tool."}
+    },
+    {
+      "id": "G03_single_unnecessary_tool",
+      "phase": "B",
+      "suite": "group",
+      "query": "Cảm ơn bạn, kết quả tóm tắt rất tuyệt vời!",
+      "failure_type": "unnecessary_tool",
+      "expect": {"no_tool": true, "behavior": "answer_without_tool"},
+      "metadata": {"skill": "small_talk", "difficulty": "easy", "what_it_tests": "Khen ngợi/Giao tiếp thông thường -> không gọi tool."}
+    },
+    {
+      "id": "G04_single_wrong_boundary",
+      "phase": "B",
+      "suite": "group",
+      "query": "Đăng thông báo 'Họp lúc 3h' lên Telegram",
+      "failure_type": "wrong_boundary",
+      "expect": {"tool_calls": [{"name": "clarify", "args": {"response_type": "yes_no"}}]},
+      "metadata": {"skill": "confirm_before_action", "difficulty": "medium", "what_it_tests": "Hành động gửi tin nhắn cần hỏi xin xác nhận (yes/no) trước khi thực thi."}
+    },
+    {
+      "id": "G05_single_wrong_arg_value",
+      "phase": "B",
+      "suite": "group",
+      "query": "Lấy đúng 2 bài đăng mới nhất của Microsoft",
+      "failure_type": "wrong_arg_value",
+      "expect": {"tool_calls": [{"name": "timeline", "args": {"screenname": "Microsoft", "limit": 2}}]},
+      "metadata": {"skill": "arg_limit_extraction", "difficulty": "medium", "what_it_tests": "Trích xuất đúng tham số limit=2 và tên account Microsoft."}
+    },
+    {
+      "id": "G06_multi_missing_info",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Hãy tóm tắt bài viết này"},
+        {"role": "user", "content": "Bài viết hôm qua ấy"},
+        {"role": "user", "content": "Tóm tắt ngắn gọn thôi"}
+      ],
+      "failure_type": "missing_info",
+      "expect": {"tool_calls": [{"name": "clarify", "args": {"response_type": "text"}}]},
+      "metadata": {"skill": "clarify_missing_url_multiturn", "difficulty": "medium", "what_it_tests": "Thiếu URL cụ thể qua nhiều lượt hội thoại -> phải hỏi lại URL bằng clarify."}
+    },
+    {
+      "id": "G07_multi_switch_tool",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Tìm tin tức trên mạng về Apple"},
+        {"role": "user", "content": "À thôi, xem người ta tweet gì về nó đi"},
+        {"role": "user", "content": "Vẫn là Apple nhé"}
+      ],
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [{"name": "social_search", "args": {"query": "Apple"}}]},
+      "metadata": {"skill": "multiturn_switch_tool", "difficulty": "hard", "what_it_tests": "Đổi ý chuyển từ web news sang twitter -> dùng social_search với query Apple."}
+    },
+    {
+      "id": "G08_multi_wrong_arg_correction",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Lấy 10 bài báo mới nhất về y tế"},
+        {"role": "user", "content": "Vẫn chủ đề đó nhưng tìm trong tháng này thôi"},
+        {"role": "user", "content": "Chắc 5 bài là đủ"}
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {"tool_calls": [{"name": "lookup", "args": {"query": "y tế", "topic": "news", "timeframe": "month"}}]},
+      "metadata": {"skill": "multiturn_arg_correction", "difficulty": "hard", "what_it_tests": "Kết hợp carry-over chủ đề y tế, cập nhật timeframe thành month."}
+    },
+    {
+      "id": "G09_multi_carryover",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Đọc trang web này giúp tôi: https://github.com"},
+        {"role": "user", "content": "Tôi nhầm link, là trang https://python.org"},
+        {"role": "user", "content": "Tóm tắt các tính năng mới nhé"}
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {"tool_calls": [{"name": "fetch", "args": {"url": "https://python.org"}}]},
+      "metadata": {"skill": "multiturn_carryover_url", "difficulty": "medium", "what_it_tests": "Sửa URL được cung cấp ở lượt trước đó thành URL mới -> gọi fetch với link thứ 2."}
+    },
+    {
+      "id": "G10_multi_out_of_scope",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Tìm hiểu về biến đổi khí hậu trên web"},
+        {"role": "user", "content": "Tìm thêm trên Twitter nữa"},
+        {"role": "user", "content": "Thôi bỏ đi, bạn nghĩ sao về việc trái đất nóng lên?"}
+      ],
+      "failure_type": "out_of_scope",
+      "expect": {"no_tool": true, "behavior": "answer_without_tool"},
+      "metadata": {"skill": "multiturn_out_of_scope", "difficulty": "hard", "what_it_tests": "Người dùng chuyển hướng sang hỏi ý kiến cá nhân -> trả lời thẳng không dùng tool."}
+    }
+  ]
 }
